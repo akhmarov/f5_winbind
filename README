@@ -1,0 +1,5 @@
+This is a fix for mod_auth_ntlm_winbind Apache module which enables
+proper handling of F5 BIG-IP TMOS health check (HTTP) requests. By
+default BIG-IP sends basic authorization and awaits for response with
+NTLM authorization header. By default winbind module checks for basic
+authorization in request and basic authorization in config file.

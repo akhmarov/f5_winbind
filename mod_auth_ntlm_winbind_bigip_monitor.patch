@@ -1,0 +1,26 @@
+--- mod_auth_ntlm_winbind.c	2015-04-28 15:27:36.000000000 +0300
++++ mod_auth_ntlm_winbind_new.c	2015-04-28 15:42:16.179959400 +0300
+@@ -990,10 +990,19 @@
+        authenticate the user with basic */
+ 
+     auth_line2 = auth_line;
+-    if (crec->ntlm_basic_on
+-        && strcasecmp(ap_getword(r->pool, &auth_line2, ' '), "Basic") == 0) {
+-        RDEBUG( "trying basic auth" );
+-        return authenticate_basic_user(r, crec, &auth_line[5]); /* seems clunky */
++    if (strcasecmp(ap_getword(r->pool, &auth_line2, ' '), "Basic") == 0) {
++		if (crec->ntlm_basic_on) {
++            RDEBUG( "trying basic auth" );
++            return authenticate_basic_user(r, crec, &auth_line[5]); /* seems clunky */
++        }
++        else if (crec->ntlm_on)
++        {
++            /* This hack is for systems sending basic auth and awaiting
++               for ntlm auth header in response for basic auth packet  */
++
++            RDEBUG( "trying ntlm auth through basic" );
++            return note_auth_failure( r, NULL );
++        }
+     }
+ 
+     /* Process a 'Negotiate' SPNEGO over http message */
